@@ -1,0 +1,16 @@
+A stack: Last in first out order
+Typical operation:
+    1) pop() -> remove the top item of the stack  
+    2) push()-> push an item to the top of the stack
+    3) peak()-> return the top item in the stack
+    4) isEmpty()-> check if a stack is isEmpty
+NOTE: stack can be implemented like a linked list as removal 
+      and addition of head is O(1) access
+
+A queue: First in first out
+Typical opertation:
+    1) enqueue() -> place an item into the queue
+    2) dequeue() -> remove the least recent / first item in the queue.
+    3) peek() -> return the first item in the queue
+    4) isEmpty() -> checks if queue is empty.
+Queue can also be implemented with a linked
