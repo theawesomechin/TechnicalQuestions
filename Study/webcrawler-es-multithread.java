@@ -1,36 +1,40 @@
-// Leetcode doesn't allow executor.shutdown().
-// Use daemon threads so the program can exit.
+/**
+ * // This is the HtmlParser's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface HtmlParser {
+ *     public List<String> getUrls(String url) {}
+ * }
+ */
 class Solution {
-    ExecutorService es;
-    public List<String> crawl(String startUrl, HtmlParser htmlParser)  {
-        es = Executors.newFixedThreadPool( 10, r -> {
-            Thread t = new Thread(r);
+    public List<String> crawl(String startUrl, HtmlParser htmlParser) {
+        ExecutorService es = Executors.newFixedThreadPool(6, l -> {
+            Thread t = new Thread(l);
             t.setDaemon(true);
             return t;
         });
-        
-        
+            
         Set<String> visited = new HashSet();
-        Queue<Future<List<String>>> q = new LinkedList();
-        String url = startUrl.split("/")[2];
+       
+        Queue<Future<List<String>>> q = new LinkedList<>();
+        String hostname = startUrl.indexOf('/', 7) == -1 ? startUrl : startUrl.substring(0,startUrl.indexOf('/', 7));
         q.add(es.submit(() -> htmlParser.getUrls(startUrl)));
-        visited.add(startUrl);
-        try {
-            while(true) {
-                if (q.isEmpty())
-                    break;
-                List<String> l = q.poll().get().stream().filter(x -> x.contains(url))
-                    .collect(Collectors.toList());
-                            
-                for (String s : l) {
-                    if (visited.contains(s))
+        visited.add(startUrl); 
+
+        try{
+
+            while(!q.isEmpty()){
+
+                List<String> listOfValidSites = q.poll().get().stream().filter(f -> f.startsWith(hostname)).collect(Collectors.toList());
+
+                for(String site : listOfValidSites){
+                    if(visited.contains(site)){
                         continue;
-                    visited.add(s);
-                    q.add(es.submit(() -> htmlParser.getUrls(s)));
+                    }
+                    visited.add(site);
+                    q.add(es.submit(() -> htmlParser.getUrls(site)));
                 }
             }
-        }
-        catch (InterruptedException | ExecutionException e) {
+        }catch(Exception e){
             
         }
         
