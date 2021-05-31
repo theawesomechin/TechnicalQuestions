@@ -1,3 +1,5 @@
+import java.util.concurrent.ExecutorService;
+import java.util.*;
 /**
  * // This is the HtmlParser's API interface.
  * // You should not implement it, or speculate about its implementation
@@ -5,15 +7,15 @@
  *     public List<String> getUrls(String url) {}
  * }
  */
+interface HtmlParser {
+    public List<String> getUrls(String url) {}
+}
 class Solution {
+    ExecutorService es;
     public List<String> crawl(String startUrl, HtmlParser htmlParser) {
-        ExecutorService es = Executors.newFixedThreadPool(6, l -> {
-            Thread t = new Thread(l);
-            t.setDaemon(true);
-            return t;
-        });
+        es = Executors.newFixedThreadPool(6);
             
-        Set<String> visited = new HashSet();
+        Set<String> visited = new HashSet<>();
        
         Queue<Future<List<String>>> q = new LinkedList<>();
         String hostname = startUrl.indexOf('/', 7) == -1 ? startUrl : startUrl.substring(0,startUrl.indexOf('/', 7));
@@ -36,6 +38,10 @@ class Solution {
             }
         }catch(Exception e){
             
+        }finally{
+            if(es != null){
+                es.shutdown();
+            }
         }
         
         return new ArrayList<String>(visited);
